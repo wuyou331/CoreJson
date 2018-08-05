@@ -14,7 +14,7 @@ namespace CoreJson.Test
             Assert.AreEqual(TestNumber("123.01").Value, "123.01");
             Assert.AreEqual(TestNumber("-123.01").Value, "-123.01");
             Assert.AreEqual(TestNumber("-123.01.012").Value, "-123.01");
-            Assert.ThrowsException<JsonParseException>(() =>TestNumber("-"));
+            Assert.ThrowsException<JsonParseException>(() => TestNumber("-"));
             Assert.ThrowsException<JsonParseException>(() => TestNumber("-0"));
             Assert.ThrowsException<JsonParseException>(() => TestNumber("-."));
         }
@@ -28,11 +28,15 @@ namespace CoreJson.Test
         [TestMethod]
         public void ReadStringTest()
         {
-            Assert.AreEqual(TestString("\"123\"").Value, "123");
-            Assert.AreEqual(TestString("\"12\\\"3\"").Value, @"12\""3");
+            Assert.AreEqual(TestString("123").Value, "123");
+            Assert.AreEqual(TestString("abcd").Value, "abcd");
+            Assert.AreEqual(TestString("ÄãºÃÂð").Value, "ÄãºÃÂð");
+            Assert.AreEqual(TestString("12\\\"3").Value, @"12\""3");
         }
+
         private Token TestString(string expr)
         {
+            expr = $"\"{expr}\"";
             var i = 1;
             return Tokenizer.ReadString(expr.AsSpan(), ref i);
         }

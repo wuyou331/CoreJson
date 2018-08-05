@@ -24,5 +24,17 @@ namespace CoreJson.Test
             var i = 1;
             return Tokenizer.ReadNumber(expr.AsSpan(), ref i);
         }
+
+        [TestMethod]
+        public void ReadStringTest()
+        {
+            Assert.AreEqual(TestString("\"123\"").Value, "123");
+            Assert.AreEqual(TestString("\"12\\\"3\"").Value, @"12\""3");
+        }
+        private Token TestString(string expr)
+        {
+            var i = 1;
+            return Tokenizer.ReadString(expr.AsSpan(), ref i);
+        }
     }
 }

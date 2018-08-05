@@ -47,7 +47,7 @@ namespace CoreJson
                 case 'f':
                     return ReadBool(span, ref postion);
                 case '"':
-                //     return readString();
+                    return ReadString(span, ref postion);
                 case '-':
                     return ReadNumber(span, ref postion);
                     return new Token(TokenType.Comma);
@@ -112,20 +112,20 @@ namespace CoreJson
             var tmp = span.Slice(postion);
             var end = 0;
             var existDot = false;
-            for (; end < span.Length; end++)
+            for (; end < tmp.Length; end++)
             {
                 if (tmp[end] == '-' && end == 0 && tmp.Length > 1)
-                    if (span[1] != '0' && Char.IsNumber(span[1]))
+                    if (tmp[1] != '0' && Char.IsNumber(tmp[1]))
                     {
                         end++;
                         continue;
                     }
                     else
                         throw new JsonParseException(postion + end);
-                else if (char.IsNumber(span[end]))
+                else if (char.IsNumber(tmp[end]))
                     continue;
-                else if (span[end] == '.' && !existDot && end > 0)
-                    if (Char.IsNumber(span[end - 1]))
+                else if (tmp[end] == '.' && !existDot && end > 0)
+                    if (Char.IsNumber(tmp[end - 1]))
                     {
                         existDot = true;
                         continue;
@@ -137,7 +137,7 @@ namespace CoreJson
             }
             if (end > 0)
             {
-                var value = span.Slice(postion, end).ToString();
+                var value = tmp.Slice(0, end).ToString();
                 postion += end;
                 return new Token(TokenType.Number, value);
             }
@@ -145,6 +145,23 @@ namespace CoreJson
             {
                 throw new JsonParseException(postion);
             }
+        }
+
+        public static Token ReadString(ReadOnlySpan<char> span, ref int postion)
+        {
+            var tmp = span.Slice(postion);
+            var end = 0;
+            for (; end < tmp.Length; end++)
+            {
+                if (tmp[end] == '"')
+                {
+                    if (end > 0 && tmp[end - 1] == '\\')
+                        continue;
+                    else
+                        return new Token(TokenType.String,tmp.Slice(0,end).ToString());
+                }
+            }
+            throw new JsonParseException(postion);
         }
     }
 }

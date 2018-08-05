@@ -161,6 +161,7 @@ namespace CoreJson
                         return new Token(TokenType.String,tmp.Slice(0,end).ToString());
                 }
             }
+            //没有结尾引号的字符串。
             throw new JsonParseException(postion);
         }
     }

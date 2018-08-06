@@ -40,5 +40,11 @@ namespace CoreJson.Test
             var i = 1;
             return Tokenizer.ReadString(expr.AsSpan(), ref i);
         }
+
+        [TestMethod]
+        public void TokenizeTest()
+        {
+            Assert.AreEqual(Tokenizer.Tokenize("{\n    \"name\" : \"ÏþÃ÷\",\n    \"age\": 18\n}").Count, 10);
+        }
     }
 }

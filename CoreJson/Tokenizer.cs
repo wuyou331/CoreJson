@@ -7,14 +7,14 @@ namespace CoreJson
 {
     public static class Tokenizer
     {
-        public static IList<Token> Tokenize(ReadOnlySpan<char> span)
+        public static Queue<Token> Tokenize(ReadOnlySpan<char> span)
         {
             var postion = 0;
-            IList<Token> tokens = new List<Token>();
+            Queue<Token> tokens = new Queue<Token>();
             do
             {
                 var token = Next(span, ref postion);
-                tokens.Add(token);
+                tokens.Enqueue(token);
             } while (tokens.Last().TokenType != TokenType.EOF);
 
             return tokens;
@@ -50,7 +50,6 @@ namespace CoreJson
                     return ReadString(span, ref postion);
                 case '-':
                     return ReadNumber(span, ref postion);
-                    return new Token(TokenType.Comma);
             }
             if (char.IsNumber(chr))
             {
@@ -158,7 +157,10 @@ namespace CoreJson
                     if (end > 0 && tmp[end - 1] == '\\')
                         continue;
                     else
-                        return new Token(TokenType.String,tmp.Slice(0,end).ToString());
+                    {
+                        postion += end+1;
+                        return new Token(TokenType.String, tmp.Slice(0, end).ToString());
+                    }
                 }
             }
             //没有结尾引号的字符串。

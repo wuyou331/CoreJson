@@ -11,10 +11,7 @@ namespace CoreJson
 
     }
 
-    public class JsonNull:JsonItem
-    {
-        
-    }
+
     public class JsonObject:JsonItem
     {
         public JsonObject()
@@ -31,6 +28,10 @@ namespace CoreJson
 
     public class JsonArray: JsonItem
     {
+        public JsonArray()
+        {
+            this.ValueType = JsonValueType.Array;
+        }
         public IList<string> Values { get; set; }
     }
 

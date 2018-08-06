@@ -46,5 +46,7 @@ namespace CoreJson.Test
         {
             Assert.AreEqual(Tokenizer.Tokenize("{\n    \"name\" : \"ÏþÃ÷\",\n    \"age\": 18\n}").Count, 10);
         }
+
+
     }
 }

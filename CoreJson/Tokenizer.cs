@@ -7,14 +7,19 @@ namespace CoreJson
 {
     public static class Tokenizer
     {
-        public static Queue<Token> Tokenize(ReadOnlySpan<char> span)
+        /// <summary>
+        /// 将Json文本，去除空格并格式化为一个个单词
+        /// </summary>
+        /// <param name="span"></param>
+        /// <returns></returns>
+        public static IList<Token> Tokenize(ReadOnlySpan<char> span)
         {
             var postion = 0;
-            Queue<Token> tokens = new Queue<Token>();
+            IList<Token> tokens = new List<Token>();
             do
             {
                 var token = Next(span, ref postion);
-                tokens.Enqueue(token);
+                tokens.Add(token);
             } while (tokens.Last().TokenType != TokenType.EOF);
 
             return tokens;
@@ -30,17 +35,17 @@ namespace CoreJson
             switch (chr)
             {
                 case '{':
-                    return new Token(TokenType.BeginObject);
+                    return new Token(TokenType.BeginObject, postion);
                 case '}':
-                    return new Token(TokenType.EndObject);
+                    return new Token(TokenType.EndObject, postion);
                 case '[':
-                    return new Token(TokenType.BeginArray);
+                    return new Token(TokenType.BeginArray, postion);
                 case ']':
-                    return new Token(TokenType.EndArray);
+                    return new Token(TokenType.EndArray, postion);
                 case ',':
-                    return new Token(TokenType.Colon);
+                    return new Token(TokenType.Comma, postion);
                 case ':':
-                    return new Token(TokenType.Comma);
+                    return new Token(TokenType.Colon, postion);
                 case 'n':
                     return ReadNull(span, ref postion);
                 case 't':
@@ -58,6 +63,11 @@ namespace CoreJson
             throw new JsonParseException(postion);
         }
 
+        /// <summary>
+        /// 跳过连续的空字符串
+        /// </summary>
+        /// <param name="span"></param>
+        /// <param name="postion"></param>
         public static void SkipWhitSpace(ReadOnlySpan<char> span, ref int postion)
         {
             for (; postion < span.Length;)
@@ -77,7 +87,7 @@ namespace CoreJson
                 throw new JsonParseException(postion);
             }
             postion += 3;
-            return new Token(TokenType.Null, "null");
+            return new Token(TokenType.Null, "null", postion);
         }
 
         public static Token ReadBool(ReadOnlySpan<char> span, ref int postion)
@@ -86,12 +96,12 @@ namespace CoreJson
             if (tmp[0] == 'r' && tmp[1] == 'u' && tmp[2] == 'e')
             {
                 postion += 3;
-                return new Token(TokenType.Bool, "true");
+                return new Token(TokenType.Bool, "true", postion);
             }
             else if (tmp[0] == 'a' && tmp[1] == 'l' && tmp[2] == 's' && tmp[3] == 'e')
             {
                 postion += 4;
-                return new Token(TokenType.Bool, "false");
+                return new Token(TokenType.Bool, "false", postion);
             }
             else
             {
@@ -99,12 +109,6 @@ namespace CoreJson
             }
         }
 
-        /// <summary>
-        /// 匹配数字
-        /// </summary>
-        /// <param name="span"></param>
-        /// <param name="index"></param>
-        /// <returns></returns>
         public static Token ReadNumber(ReadOnlySpan<char> span, ref int postion)
         {
             postion--;
@@ -138,7 +142,7 @@ namespace CoreJson
             {
                 var value = tmp.Slice(0, end).ToString();
                 postion += end;
-                return new Token(TokenType.Number, value);
+                return new Token(TokenType.Number, value, postion);
             }
             else
             {
@@ -158,8 +162,8 @@ namespace CoreJson
                         continue;
                     else
                     {
-                        postion += end+1;
-                        return new Token(TokenType.String, tmp.Slice(0, end).ToString());
+                        postion += end + 1;
+                        return new Token(TokenType.String, tmp.Slice(0, end).ToString(), postion);
                     }
                 }
             }

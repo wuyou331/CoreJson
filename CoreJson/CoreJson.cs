@@ -71,43 +71,72 @@ namespace CoreJson
 
         private JsonItem GetJsonItem(TokenReader reader)
         {
-            JsonItem item = null;
             switch (reader.Current.TokenType)
             {
                 case TokenType.String:
-                    item = new JsonValue()
+                    return new JsonValue()
                     {
                         ValueType = JsonValueType.String,
                         Value = reader.Current.Value
                     };
-                    break;
                 case TokenType.Number:
-                    item = new JsonValue()
+                    return new JsonValue()
                     {
                         ValueType = JsonValueType.Number,
                         Value = reader.Current.Value
                     };
-                    break;
                 case TokenType.Bool:
-                    item = new JsonValue()
+                    return new JsonValue()
                     {
                         ValueType = JsonValueType.Bool,
                         Value = reader.Current.Value
                     };
-                    break;
                 case TokenType.Null:
-                    item = new JsonValue()
+                    return new JsonValue()
                     {
                         ValueType = JsonValueType.Null
                     };
-                    break;
                 case TokenType.BeginObject:
-                    item = GetObject(reader);
-                    break;
+                    return GetObject(reader);
                 case TokenType.BeginArray:
-
-                    break;
+                    return GetJsonArray(reader);
             }
+            return null;
+        }
+
+        private JsonArray GetJsonArray(TokenReader reader)
+        {
+            JsonArray item = new JsonArray();
+            item.Values = new List<JsonItem>();
+            reader.NextStep();
+            do
+            {
+                if (reader.Current.TokenType == TokenType.EndArray)
+                    break;
+
+                var value = GetJsonItem(reader);
+                if (value == null)
+                    throw new JsonParseException(reader.Current.Postion);
+                item.Values.Add(value);
+                reader.NextStep();
+
+                if (reader.Current.TokenType == TokenType.EndArray)
+                    break;
+                else if (reader.Current.TokenType == TokenType.Comma)
+                {
+                    reader.NextStep();
+                    var type = reader.Current.TokenType;
+                    if (!(type == TokenType.String
+                          || type == TokenType.Bool
+                          || type == TokenType.Number
+                          || type == TokenType.Null
+                          || type == TokenType.BeginObject
+                          || type == TokenType.BeginArray))
+                    {
+                        throw new JsonParseException(reader.Current.Postion);
+                    }
+                }
+            } while (reader.HasMore());
             return item;
         }
     }

@@ -32,7 +32,7 @@ namespace CoreJson
         {
             this.ValueType = JsonValueType.Array;
         }
-        public IList<string> Values { get; set; }
+        public IList<JsonItem> Values { get; set; }
     }
 
     public enum JsonValueType

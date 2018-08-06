@@ -41,14 +41,46 @@ namespace CoreJson
                     }
                     else if (jsonItem is JsonArray arr)
                     {
-
+                        var item = ConverArray(arr);
+                        propertyInfo.SetValue(result, item);
                     }
                 }
             }
             return result;
         }
 
-        public static object ConvertType(string str, Type type)
+        private static object[] ConverArray(JsonArray arr)
+        {
+            var arrs = new object[arr.Values.Count];
+            var i = 0;
+            foreach (var arrValue in arr.Values)
+            {
+                if (arrValue is JsonValue val)
+                {
+                  arrs[i]=ConvertValue(val);  
+                }else if (arrValue is JsonArray array)
+                {
+                    arrs[i]=ConverArray(array);
+                }
+                else if (arrValue is JsonObject obj)
+                {
+                    arrs[i] = new List<object>();
+                }
+                i++;
+            }
+      
+            return arrs;
+        }
+        private static object ConvertValue(JsonValue value)
+        {
+            if (value.ValueType == JsonValueType.Null) return null;
+            if (value.ValueType == JsonValueType.String) return value.Value;
+            if (value.ValueType == JsonValueType.Bool) return bool.Parse(value.Value);
+            if (value.ValueType == JsonValueType.Number) return double.Parse(value.Value);
+            return null;
+        }
+
+        private static object ConvertType(string str, Type type)
         {
             if (str == null) return null;
             if (type == typeof(string)) return str;

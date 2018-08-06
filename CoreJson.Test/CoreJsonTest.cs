@@ -32,6 +32,10 @@ namespace CoreJson.Test
             var item = Deserializer.ToObject<Student>("{\n    \"name\" : \"晓明\",\n    \"age\": 18\n}");
             Assert.AreEqual(item.Name, "晓明");
             Assert.AreEqual(item.Age, 18);
+
+             item = Deserializer.ToObject<Student>("{\n    \"name\":\"晓明\",\n    \"age\":18,\n    \"attr\":[\n        \"18\",\n        \"张三\"\n    ]\n}");
+            Assert.AreEqual(item.Name, "晓明");
+            Assert.AreEqual(item.Age, 18);
         }
     }
 
@@ -40,5 +44,6 @@ namespace CoreJson.Test
     {
         public string Name { get; set; }
         public int Age { get; set; }
+        public string[]Attr { get; set; }
     }
 }

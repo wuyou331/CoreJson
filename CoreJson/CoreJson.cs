@@ -33,6 +33,7 @@ namespace CoreJson
 
             if (reader.Current.TokenType != TokenType.BeginObject)
                 throw new JsonParseException(reader.Current.Postion);
+
             result.Properties = new List<JsonItem>();
             do
             {
@@ -53,17 +54,11 @@ namespace CoreJson
 
                 reader.NextStep();
                 if (reader.Current.TokenType == TokenType.Comma)
-                {
                     continue;
-                }
                 else if (reader.Current.TokenType == TokenType.EndObject)
-                {
                     break;
-                }
                 else
-                {
                     throw new JsonParseException(reader.Current.Postion);
-                }
             } while (reader.HasMore());
 
             return result;

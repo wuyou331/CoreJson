@@ -30,7 +30,8 @@ namespace CoreJson
                 {
                     if (jsonItem is JsonValue val)
                     {
-                        propertyInfo.SetValue(result, val.Value);
+                        var value = ConvertType(val.Value, propertyInfo.PropertyType);
+                        propertyInfo.SetValue(result, value);
                     }
                     else if (jsonItem is JsonObject obj)
                     {
@@ -46,7 +47,16 @@ namespace CoreJson
             }
             return result;
         }
-        
+
+        public static object ConvertType(string str, Type type)
+        {
+            if (str == null) return null;
+            if (type == typeof(string)) return str;
+            if (type == typeof(int)) return int.Parse(str);
+            if (type == typeof(double)) return double.Parse(str);
+            if (type == typeof(bool)) return bool.Parse(str);
+            return null;
+        }
 
 
         public static JsonObject AnalysisObject(ReadOnlySpan<char> span)

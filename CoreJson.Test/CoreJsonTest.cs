@@ -29,8 +29,9 @@ namespace CoreJson.Test
         [TestMethod]
         public void DeserializerTest()
         {
-            var item = Deserializer.ToObject<Student>("{\n    \"name\" : \"晓明\"\n}");
+            var item = Deserializer.ToObject<Student>("{\n    \"name\" : \"晓明\",\n    \"age\": 18\n}");
             Assert.AreEqual(item.Name, "晓明");
+            Assert.AreEqual(item.Age, 18);
         }
     }
 

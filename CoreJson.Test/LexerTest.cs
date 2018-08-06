@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CoreJson.Test
 {
     [TestClass]
-    public class TokenizerTest
+    public class LexerTest
     {
         [TestMethod]
         public void ReadNumberTest()
@@ -22,7 +22,7 @@ namespace CoreJson.Test
         private Token TestNumber(string expr)
         {
             var i = 1;
-            return Tokenizer.ReadNumber(expr.AsSpan(), ref i);
+            return Lexer.ReadNumber(expr.AsSpan(), ref i);
         }
 
         [TestMethod]
@@ -38,13 +38,13 @@ namespace CoreJson.Test
         {
             expr = $"\"{expr}\"";
             var i = 1;
-            return Tokenizer.ReadString(expr.AsSpan(), ref i);
+            return Lexer.ReadString(expr.AsSpan(), ref i);
         }
 
         [TestMethod]
         public void TokenizeTest()
         {
-            Assert.AreEqual(Tokenizer.Tokenize("{\n    \"name\" : \"ÏþÃ÷\",\n    \"age\": 18\n}").Count, 10);
+            Assert.AreEqual(Lexer.Analyzer("{\n    \"name\" : \"ÏþÃ÷\",\n    \"age\": 18\n}").Count, 10);
         }
 
 

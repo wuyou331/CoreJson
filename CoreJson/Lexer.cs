@@ -5,14 +5,14 @@ using System.Text;
 
 namespace CoreJson
 {
-    public static class Tokenizer
+    public static class Lexer
     {
         /// <summary>
         /// 将Json文本，去除空格并格式化为一个个单词
         /// </summary>
         /// <param name="span"></param>
         /// <returns></returns>
-        public static IList<Token> Tokenize(ReadOnlySpan<char> span)
+        public static IList<Token> Analyzer(ReadOnlySpan<char> span)
         {
             var postion = 0;
             IList<Token> tokens = new List<Token>();
